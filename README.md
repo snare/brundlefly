@@ -1,7 +1,7 @@
 brundlefly
 ==========
 
-An unholy marriage of UEFI and Rust.
+An unholy marriage of UEFI and Rust. It doesn't actually do anything, it's just a PoC of building a basic EFI executable in Rust. Inspired by @charliesome's [https://github.com/charliesome/rustboot](rustboot).
 
 Prerequisites
 -------------
