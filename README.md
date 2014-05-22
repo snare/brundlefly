@@ -6,7 +6,7 @@ An unholy marriage of UEFI and Rust.
 Prerequisites
 -------------
 
-You'll need a couple of tools to build this monstrosity - namely `mtoc` from Apple's `cctools` package, and `GenFw` from the EFI Development Kit.
+This build process will only work on OS X. You'll need a couple of tools to build this monstrosity - namely `mtoc` from Apple's `cctools` package, and `GenFw` from the EFI Development Kit.
 
 `cctools` used to pretty easy to build, but it doesn't work for me at the moment. Easiest way I've found is just to install it from `brew`:
 
