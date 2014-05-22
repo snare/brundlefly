@@ -23,6 +23,8 @@ It might error out, but it should have already built the one tool we need.
 
 Whatever the path to the EDK2 is you'll need to note down and pass it to `make`. I have it in `~/code/ext/edk2`.
 
+Of course, you'll also need the Rust toolchain. I'm using the binary package from the [Rust web site](http://www.rust-lang.org/).
+
 Building
 --------
 
