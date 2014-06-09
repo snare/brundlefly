@@ -1,7 +1,7 @@
 brundlefly
 ==========
 
-An unholy marriage of UEFI and Rust. It doesn't actually do anything, it's just a PoC of building a basic EFI executable in Rust. Inspired by @charliesome's [rustboot](https://github.com/charliesome/rustboot).
+An unholy marriage of UEFI and Rust. It doesn't actually do much, it's just a PoC of a basic EFI executable in Rust. Inspired by @charliesome's [rustboot](https://github.com/charliesome/rustboot).
 
 Prerequisites
 -------------
@@ -23,7 +23,11 @@ It might error out, but it should have already built the one tool we need.
 
 Whatever the path to the EDK2 is you'll need to note down and pass it to `make`. I have it in `~/code/ext/edk2`.
 
-Of course, you'll also need the Rust toolchain. I'm using the binary package from the [Rust web site](http://www.rust-lang.org/).
+If you want to run this in `qemu` you'll need to install it:
+
+	$ brew install qemu
+
+Of course, you'll also need the Rust toolchain. I build it from [source](https://github.com/mozilla/rust).
 
 Building
 --------
@@ -31,17 +35,14 @@ Building
 Once you have the pre-reqs ready, you should be able to build with just a `make` in the `brundlefly` dir, passing it the path to the EDK:
 
 	$ make EDK2=~/code/ext/edk2
-	rustc -O --crate-type lib -o main.o --emit obj main.rs
-	main.rs:45:41: 45:52 warning: unused variable: `imageHandle`, #[warn(unused_variable)] on by default
-	main.rs:45 pub extern "win64" fn _ModuleEntryPoint(imageHandle: u64, systemTable: *EfiSystemTable) -> int {
-	                                                   ^~~~~~~~~~~
-	libtool -static -o brundlefly.lib main.o
-	ld -arch x86_64 -u __ModuleEntryPoint -e __ModuleEntryPoint -preload  -pie -all_load -dead_strip -seg1addr 0x260 -o brundlefly.dll brundlefly.lib
-	ld: warning: -seg1addr not 4096 byte aligned, rounding up
-	mtoc -subsystem UEFI_APPLICATION  -align 0x20 -d brundlefly.dll brundlefly.dll brundlefly.pecoff
-	~/code/ext/edk2/BaseTools/Source/C/bin/GenFw -e UEFI_APPLICATION -o brundlefly.efi brundlefly.pecoff
+
+You should now have `brundlefly.efi` in the `build` directory.
 
 Running
 -------
 
-You should now have `brundlefly.efi` which you can run from the UEFI shell. If you care enough to try this, you probably already know how that works.
+If you have `qemu` installed you can run with:
+
+	$ make run
+
+This uses an included binary of OVMF borrowed from [here](http://people.canonical.com/~jk/ovmf/).
