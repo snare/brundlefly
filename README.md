@@ -10,6 +10,7 @@ This build process will only work on OS X. You'll need a couple of tools to buil
 
 `cctools` used to pretty easy to build, but it doesn't work for me at the moment. Easiest way I've found is just to install it from `brew`:
 
+    $ brew tap henrik-muehe/homebrew-hyper
 	$ brew install cctools
 
 The EDK2 `BaseTools` package doesn't seem to build properly with my current toolchain either. I've had various issues with it in the past, but we can easily patch the Makefile to make it build. Check out the EDK2, patch the Makefile so it works, and build the `BaseTools`:
