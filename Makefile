@@ -5,7 +5,7 @@ EDK2:=~/code/ext/edk2
 GENFW=$(EDK2)/BaseTools/Source/C/bin/GenFw
 RUST_PATH:=$(HOME)/rust
 RUSTC=$(RUST_PATH)/bin/rustc
-RUSTC_FLAGS=-Auppercase_variables -Anon_camel_case_types -Aunused_variable -Aunused_imports -O --crate-type=lib 
+RUSTC_FLAGS=-Auppercase_variables -Anon_camel_case_types -Aunused_variable -Aunused_imports -O --crate-type=lib
 RUST_LIB_DIR=$(RUST_PATH)/lib/rustlib/x86_64-apple-darwin/lib
 RUST_LIBS=$(RUST_LIB_DIR)/libcore-c5ed6fb4-0.11.0-pre.rlib $(RUST_LIB_DIR)/libcompiler-rt.a
 
@@ -24,7 +24,7 @@ all: brundlefly.efi
 
 $(BUILDDIR)/%.o: %.rs
 	mkdir -p build
-	$(RUSTC) $(RUSTC_FLAGS) -o $(BUILDDIR)/brundlefly.lib $< 
+	$(RUSTC) $(RUSTC_FLAGS) -o $(BUILDDIR)/brundlefly.lib $<
 
 brundlefly.efi: $(OBJECTS)
 	mkdir -p build
