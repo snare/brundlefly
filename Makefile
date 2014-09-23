@@ -3,7 +3,7 @@ LIBTOOL=libtool
 MTOC=mtoc
 EDK2:=~/code/ext/edk2
 GENFW=$(EDK2)/BaseTools/Source/C/bin/GenFw
-RUST_PATH:=$(HOME)/rust
+RUST_PATH?=$(HOME)/rust
 RUSTC=$(RUST_PATH)/bin/rustc
 RUSTC_FLAGS=-Auppercase_variables -Anon_camel_case_types -Aunused_variable -Aunused_imports -O --crate-type=lib
 RUST_LIB_DIR=$(RUST_PATH)/lib/rustlib/x86_64-apple-darwin/lib
