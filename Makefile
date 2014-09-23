@@ -7,7 +7,7 @@ RUST_PATH?=$(HOME)/rust
 RUSTC=$(RUST_PATH)/bin/rustc
 RUSTC_FLAGS=-Anon_camel_case_types -Aunused_variable -Aunused_imports -O --crate-type=lib
 RUST_LIB_DIR=$(RUST_PATH)/lib/rustlib/x86_64-apple-darwin/lib
-RUST_LIBS=$(RUST_LIB_DIR)/libcore-c5ed6fb4-0.11.0-pre.rlib $(RUST_LIB_DIR)/libcompiler-rt.a
+RUST_LIBS=$(wildcard $(RUST_LIB_DIR)/libcore-*-pre.rlib) $(RUST_LIB_DIR)/libcompiler-rt.a
 
 BUILDDIR=build
 RUNDIR=run
