@@ -24,7 +24,7 @@ pub mod efi;
 //
 
 #[no_split_stack]
-pub fn EfiMain(imageHandle: EfiHandle, systemTable: *EfiSystemTable) -> EfiStatus {
+pub fn EfiMain(imageHandle: EfiHandle, systemTable: *mut EfiSystemTable) -> EfiStatus {
     let loader = Loader { imageHandle: imageHandle, systemTable: systemTable };
     loader.main()
 }
@@ -35,7 +35,7 @@ pub fn EfiMain(imageHandle: EfiHandle, systemTable: *EfiSystemTable) -> EfiStatu
 
 struct Loader {
     pub imageHandle:    EfiHandle,
-    pub systemTable:    *EfiSystemTable
+    pub systemTable:    *mut EfiSystemTable
 }
 
 impl Loader {
@@ -43,7 +43,7 @@ impl Loader {
         let status: EfiStatus = EFI_SUCCESS;
 
         efi::print("rustybutts\n");
-        
+
         status
     }
 }
