@@ -9,7 +9,7 @@ use core::str::StrSlice;
 use core::intrinsics::transmute;
 use core::intrinsics::offset;
 
-pub type EfiHandle = *();
+pub type EfiHandle = *mut ();
 pub type EfiPlaceholderFunction = (extern "win64" fn() -> u64);
 
 //
@@ -61,24 +61,24 @@ pub struct EfiTableHeader {
     pub Reserved:                           u32
 }
 
-// All the *u64's are pointers to stuff I don't really need atm and cbf defining structs for
+// All the *mut u64's are pointers to stuff I don't really need atm and cbf defining structs for
 pub struct EfiSystemTable {
     pub Hdr:                                EfiTableHeader,
-    pub FirmwareVendor:                     *u16,
+    pub FirmwareVendor:                     *mut u16,
     pub Revision:                           u32,
 
-    pub ConsoleInHandle:                    *EfiHandle,
-    pub ConIn:                              *EfiSimpleTextInputProtocol,
-    pub ConsoleOutHandle:                   *EfiHandle,
-    pub ConOut:                             *EfiSimpleTextOutputProtocol,
-    pub StandardErrorHandle:                *EfiHandle,
-    pub StdErr:                             *EfiSimpleTextOutputProtocol,
+    pub ConsoleInHandle:                    *mut EfiHandle,
+    pub ConIn:                              *mut EfiSimpleTextInputProtocol,
+    pub ConsoleOutHandle:                   *mut EfiHandle,
+    pub ConOut:                             *mut EfiSimpleTextOutputProtocol,
+    pub StandardErrorHandle:                *mut EfiHandle,
+    pub StdErr:                             *mut EfiSimpleTextOutputProtocol,
 
-    pub RuntimeServices:                    *EfiRuntimeServicesTable,
-    pub BootServices:                       *EfiBootServicesTable,
+    pub RuntimeServices:                    *mut EfiRuntimeServicesTable,
+    pub BootServices:                       *mut EfiBootServicesTable,
 
     pub NumberOfTableEntries:               u64,
-    pub ConfigurationTable:                 *EfiConfigurationTable
+    pub ConfigurationTable:                 *mut EfiConfigurationTable
 }
 
 // Runtime Services table
@@ -106,12 +106,12 @@ pub struct EfiBootServicesTable {
     pub RaiseTPL:                           (extern "win64" fn(newTpl: u64) -> u64),
     pub RestoreTPL:                         (extern "win64" fn(oldTpl: u64) -> u64),
     pub AllocatePages:                      (extern "win64" fn(allocateType: u8, memoryType: u8, pages: u64,
-                                                               memory: *u64) -> u64),
+                                                               memory: *mut u64) -> u64),
     pub FreePages:                          (extern "win64" fn(memory: u64, pages: u64) -> u64),
-    pub GetMemoryMap:                       (extern "win64" fn(memoryMapSize: u64, memoryMap: *u64, mapKey: *u64,
-                                                               descSize: *u64, descVersion: *u64) -> u64),
-    pub AllocatePool:                       (extern "win64" fn(memoryType: u8, size: u64, buffer: **u64) -> u64),
-    pub FreePool:                           (extern "win64" fn(buffer: *u64) -> u64),
+    pub GetMemoryMap:                       (extern "win64" fn(memoryMapSize: u64, memoryMap: *mut u64, mapKey: *mut u64,
+                                                               descSize: *mut u64, descVersion: *mut u64) -> u64),
+    pub AllocatePool:                       (extern "win64" fn(memoryType: u8, size: u64, buffer: *mut *mut u64) -> u64),
+    pub FreePool:                           (extern "win64" fn(buffer: *mut u64) -> u64),
     pub CreateEvent:                        EfiPlaceholderFunction,
     pub SetTimer:                           EfiPlaceholderFunction,
     pub WaitForEvent:                       EfiPlaceholderFunction,
@@ -121,12 +121,12 @@ pub struct EfiBootServicesTable {
     pub InstallProtocolInterface:           EfiPlaceholderFunction,
     pub ReinstallProtocolInterface:         EfiPlaceholderFunction,
     pub UninstallProtocolInterface:         EfiPlaceholderFunction,
-    pub HandleProtocol:                     (extern "win64" fn(handle: EfiHandle, protocol: *EfiGuid,
-                                                               interface: **u64) -> u64),
+    pub HandleProtocol:                     (extern "win64" fn(handle: EfiHandle, protocol: *mut EfiGuid,
+                                                               interface: *mut *mut u64) -> u64),
     pub Reserved:                           u64,
     pub RegisterProtocolNotify:             EfiPlaceholderFunction,
-    pub LocateHandle:                       (extern "win64" fn(searchType: u8, protocol: *EfiGuid, searchKey: *u64,
-                                                               bufferSize: *u64, buffer: *u64) -> u64),
+    pub LocateHandle:                       (extern "win64" fn(searchType: u8, protocol: *mut EfiGuid, searchKey: *mut u64,
+                                                               bufferSize: *mut u64, buffer: *mut u64) -> u64),
     pub LocateDevicePath:                   EfiPlaceholderFunction,
     pub InstallConfigurationTable:          EfiPlaceholderFunction,
     pub LoadImage:                          EfiPlaceholderFunction,
@@ -139,10 +139,10 @@ pub struct EfiBootServicesTable {
     pub SetWatchdogTimer:                   EfiPlaceholderFunction,
     pub ConnectController:                  EfiPlaceholderFunction,
     pub DisconnectController:               EfiPlaceholderFunction,
-    pub OpenProtocol:                       (extern "win64" fn(handle: EfiHandle, protocol: *EfiGuid, interface: **u64,
+    pub OpenProtocol:                       (extern "win64" fn(handle: EfiHandle, protocol: *mut EfiGuid, interface: *mut *mut u64,
                                                                agentHandle: EfiHandle, controllerHandle: EfiHandle,
                                                                attributes: u32) -> u64),
-    pub CloseProtocol:                      (extern "win64" fn(handle: EfiHandle, protocol: *EfiGuid, agentHandle: EfiHandle,
+    pub CloseProtocol:                      (extern "win64" fn(handle: EfiHandle, protocol: *mut EfiGuid, agentHandle: EfiHandle,
                                                                controllerHandle: EfiHandle) -> u64),
     pub OpenProtocolInformation:            EfiPlaceholderFunction,
     pub ProtocolsPerHandle:                 EfiPlaceholderFunction,
@@ -151,8 +151,8 @@ pub struct EfiBootServicesTable {
     pub InstallMultipleProtocolInterfaces:  EfiPlaceholderFunction,
     pub UninstallMultipleProtocolInterfaces:EfiPlaceholderFunction,
     pub CalculateCrc32:                     EfiPlaceholderFunction,
-    pub CopyMem:                            (extern "win64" fn(destination: *u64, source: *u64) -> u64),
-    pub SetMem:                             (extern "win64" fn(buffer: *u64, size: u64, value: u8) -> u64),
+    pub CopyMem:                            (extern "win64" fn(destination: *mut u64, source: *mut u64) -> u64),
+    pub SetMem:                             (extern "win64" fn(buffer: *mut u64, size: u64, value: u8) -> u64),
     pub CreateEventEx:                      EfiPlaceholderFunction
 }
 
@@ -170,24 +170,24 @@ pub struct EfiGuid {
 }
 
 pub struct EfiSimpleTextOutputProtocol {
-    pub Reset:                              (extern "win64" fn(this: *EfiSimpleTextOutputProtocol,
+    pub Reset:                              (extern "win64" fn(this: *mut EfiSimpleTextOutputProtocol,
                                                                extendedVerification: bool) -> u64),
-    pub OutputString:                       (extern "win64" fn(this: *EfiSimpleTextOutputProtocol,
-                                                               string: *u16) -> u64),
-    pub TestString:                         (extern "win64" fn(this: *EfiSimpleTextOutputProtocol,
-                                                               string: *u16) -> u64),
-    pub QueryMode:                          (extern "win64" fn(this: *EfiSimpleTextOutputProtocol,
+    pub OutputString:                       (extern "win64" fn(this: *mut EfiSimpleTextOutputProtocol,
+                                                               string: *mut u16) -> u64),
+    pub TestString:                         (extern "win64" fn(this: *mut EfiSimpleTextOutputProtocol,
+                                                               string: *mut u16) -> u64),
+    pub QueryMode:                          (extern "win64" fn(this: *mut EfiSimpleTextOutputProtocol,
                                                                modeNumber: u64, columns: &u64, rows: &u64) -> u64),
-    pub SetMode:                            (extern "win64" fn(this: *EfiSimpleTextOutputProtocol,
+    pub SetMode:                            (extern "win64" fn(this: *mut EfiSimpleTextOutputProtocol,
                                                                modeNumber: u64) -> u64),
-    pub SetAttribute:                       (extern "win64" fn(this: *EfiSimpleTextOutputProtocol,
+    pub SetAttribute:                       (extern "win64" fn(this: *mut EfiSimpleTextOutputProtocol,
                                                                attribute: u64) -> u64),
-    pub ClearScreen:                        (extern "win64" fn(this: *EfiSimpleTextOutputProtocol) -> u64),
-    pub SetCursorPosition:                  (extern "win64" fn(this: *EfiSimpleTextOutputProtocol,
+    pub ClearScreen:                        (extern "win64" fn(this: *mut EfiSimpleTextOutputProtocol) -> u64),
+    pub SetCursorPosition:                  (extern "win64" fn(this: *mut EfiSimpleTextOutputProtocol,
                                                                column: u64, row: u64) -> u64),
-    pub EnableCursor:                       (extern "win64" fn(this: *EfiSimpleTextOutputProtocol,
+    pub EnableCursor:                       (extern "win64" fn(this: *mut EfiSimpleTextOutputProtocol,
                                                                visible: bool) -> u64),
-    pub Mode:                               *SimpleTextOutputMode
+    pub Mode:                               *mut SimpleTextOutputMode
 }
 
 pub struct SimpleTextOutputMode {
@@ -205,13 +205,13 @@ pub struct EfiSimpleTextInputProtocol;
 // Main UEFI entry point
 //
 
-pub static mut ST: *EfiSystemTable          = 0 as *EfiSystemTable;
-pub static mut RT: *EfiRuntimeServicesTable = 0 as *EfiRuntimeServicesTable;
-pub static mut BS: *EfiBootServicesTable    = 0 as *EfiBootServicesTable;
+pub static mut ST: *mut EfiSystemTable          = 0 as *mut EfiSystemTable;
+pub static mut RT: *mut EfiRuntimeServicesTable = 0 as *mut EfiRuntimeServicesTable;
+pub static mut BS: *mut EfiBootServicesTable    = 0 as *mut EfiBootServicesTable;
 
 #[no_mangle]
 #[no_split_stack]
-pub extern "win64" fn _ModuleEntryPoint(imageHandle: EfiHandle, systemTable: *EfiSystemTable) -> EfiStatus {
+pub extern "win64" fn _ModuleEntryPoint(imageHandle: EfiHandle, systemTable: *mut EfiSystemTable) -> EfiStatus {
     unsafe {
         ST = systemTable;
         RT = (*systemTable).RuntimeServices;
@@ -226,15 +226,15 @@ pub extern "win64" fn _ModuleEntryPoint(imageHandle: EfiHandle, systemTable: *Ef
 //
 
 #[no_split_stack]
-pub fn str_to_utf16(string: &str) -> *u16 {
+pub fn str_to_utf16(string: &str) -> *mut u16 {
     unsafe {
-        let ptr: *u16 = transmute(malloc(string.char_len()*2));
+        let ptr: *mut u16 = transmute(malloc(string.char_len()*2));
 
         if ptr as u64 != 0 {
             let mut p = ptr;
             for c in string.chars() {
                 *(p as *mut u16) = c as u16;
-                p = offset(p, 1);
+                p = offset(p as *const u16, 1) as *mut u16;
             }
             *(p as *mut u16) = 0 as u16;
         }
@@ -249,7 +249,7 @@ pub fn print(string: &str) {
     unsafe { free(transmute(p)); }
 }
 
-pub fn print_utf16(string: *u16) {
+pub fn print_utf16(string: *mut u16) {
     unsafe {
         // get the Simple Text Output Protool instance on the console output handle, get the OutputString() function
         let conOut = (*::efi::ST).ConOut;
@@ -264,11 +264,11 @@ pub fn print_utf16(string: *u16) {
 // #[lang="exchange_malloc"]
 pub fn malloc(size: uint) -> *mut u8 {
     unsafe {
-        let mut ptr: *u64 = 0 as *u64;
-        let status = ((*::efi::BS).AllocatePool)(0, size as u64, &ptr);
+        let mut ptr: *mut u64 = 0 as *mut u64;
+        let status = ((*::efi::BS).AllocatePool)(0, size as u64, &mut ptr);
 
         if status != 0 {
-            ptr = 0 as *u64;
+            ptr = 0 as *mut u64;
         }
         ptr as *mut u8
     }
@@ -276,9 +276,9 @@ pub fn malloc(size: uint) -> *mut u8 {
 
 // #[inline]
 // #[lang="exchange_free"]
-pub unsafe fn free(ptr: *u8) {
+pub unsafe fn free(ptr: *mut u8) {
     unsafe {
-        ((*::efi::BS).FreePool)(ptr as *u64);
+        ((*::efi::BS).FreePool)(ptr as *mut u64);
     }
 }
 
@@ -293,5 +293,5 @@ pub fn __morestack() {
 #[no_mangle]
 #[no_split_stack]
 pub fn rust_begin_unwind() {
-    
+
 }
